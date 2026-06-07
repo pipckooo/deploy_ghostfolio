@@ -1,4 +1,4 @@
 variable "my_ip" {
-    type = string
-    description = "My IP address"
+  type        = string
+  description = "My IP address"
 }
