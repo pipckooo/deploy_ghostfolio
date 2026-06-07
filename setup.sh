@@ -1,0 +1,32 @@
+#!/bin/bash
+apt-get update -y
+apt-get install -y nginx certbot python3-certbot-nginx
+
+rm /etc/nginx/sites-enabled/default
+cat << 'EON' > /etc/nginx/sites-available/reverse-proxy.conf
+server {
+    listen 80;
+    server_name task-3-2-4.fox-tier-task.pp.ua;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+EON
+
+ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/
+systemctl restart nginx
+
+certbot --nginx -d task-3-2-4.fox-tier-task.pp.ua --non-interactive --agree-tos -m olegkonovaluk15@gmail.com --redirect
+
+curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+apt-get install -y nodejs
+npm install -g pm2
+
+
+
+
