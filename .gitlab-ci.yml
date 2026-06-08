@@ -129,6 +129,6 @@ deploy_to_ec2:
      
     - rsync -avz --delete dist/apps/api/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/api
     - rsync -avz --delete dist/apps/client/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/client
-    - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && npm install --production && pm2 restart my-api || pm2 start main.js --name my-api"
-    - ssh ubuntu@$EC2_IP_ADDRESS "sudo systemctl status nginx --no-pager || true"
+    - rsync -avz prisma/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/api/prisma
+    - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && npm install --production && npx prisma generate && pm2 restart my-api || pm2 start main.js --name my-api"    - ssh ubuntu@$EC2_IP_ADDRESS "sudo systemctl status nginx --no-pager || true"
     - ssh ubuntu@$EC2_IP_ADDRESS "pm2 logs my-api --lines 20 --nostream"
