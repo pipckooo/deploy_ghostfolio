@@ -130,6 +130,7 @@ deploy_to_ec2:
     - rsync -avz --delete dist/apps/api/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/api
     - rsync -avz --delete dist/apps/client/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/client
     - rsync -avz prisma/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/api/prisma
+    - rsync -avz .config/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/api/.config
 
     - ssh ubuntu@$EC2_IP_ADDRESS "sudo fallocate -l 1G /swapfile || true"
     - ssh ubuntu@$EC2_IP_ADDRESS "sudo chmod 600 /swapfile || true"
