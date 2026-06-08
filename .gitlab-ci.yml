@@ -145,6 +145,7 @@ deploy_to_ec2:
     - ssh ubuntu@$EC2_IP_ADDRESS "echo 'ACCESS_TOKEN_SALT=my_super_secret_salt_123' > /home/ubuntu/apps/api/.env"
     - ssh ubuntu@$EC2_IP_ADDRESS "echo 'JWT_SECRET_KEY=my_super_secret_jwt_key_456' >> /home/ubuntu/apps/api/.env"
     - ssh ubuntu@$EC2_IP_ADDRESS "echo 'DATABASE_URL=postgresql://ghostfolio:ghostfolio@127.0.0.1:5432/ghostfolio' >> /home/ubuntu/apps/api/.env"
+    - ssh ubuntu@$EC2_IP_ADDRESS "echo 'PORT=3000' >> /home/ubuntu/apps/api/.env"
    
     - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && npx --yes prisma db push"
 
