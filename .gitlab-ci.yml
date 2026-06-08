@@ -135,8 +135,8 @@ deploy_to_ec2:
     - ssh ubuntu@$EC2_IP_ADDRESS "sudo chmod 600 /swapfile || true"
     - ssh ubuntu@$EC2_IP_ADDRESS "sudo mkswap /swapfile || true"
     - ssh ubuntu@$EC2_IP_ADDRESS "sudo swapon /swapfile || true"
-    
-    - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && npm install --production && npx --yes prisma generate"
+
+    - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && npm install --production && npx --yes prisma@7.8.0 generate"
     
     - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && pm2 restart my-api || pm2 start main.js --name my-api"
     
