@@ -92,6 +92,7 @@ build_client:
   script:
     - npm install
     - npx nx build client --prod --localize=false
+    - for lang in ca de en es fr it ko nl pl pt tr uk zh; do mkdir -p dist/apps/client/$lang && cp dist/apps/client/index.html dist/apps/client/$lang/index.html; done
     - tar -czvf client-build.tar.gz -C dist/apps/client .
   artifacts: 
     name : client_build
