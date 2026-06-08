@@ -8,7 +8,7 @@ until ping -c 1 deb.nodesource.com; do
 done
 
 apt-get update -y
-apt-get install -y nginx certbot python3-certbot-nginx curl postgresql postgresql-contrib
+apt-get install -y nginx certbot python3-certbot-nginx curl postgresql postgresql-contrib redis-server
 
 
 sudo -u postgres psql -c "CREATE USER ghostfolio WITH PASSWORD 'ghostfolio';" || true
