@@ -8,7 +8,11 @@ until ping -c 1 deb.nodesource.com; do
 done
 
 apt-get update -y
-apt-get install -y nginx certbot python3-certbot-nginx curl
+apt-get install -y nginx certbot python3-certbot-nginx curl postgresql postgresql-contrib
+
+# Setup PostgreSQL Database
+sudo -u postgres psql -c "CREATE USER ghostfolio WITH PASSWORD 'ghostfolio';" || true
+sudo -u postgres psql -c "CREATE DATABASE ghostfolio OWNER ghostfolio;" || true
 
 rm -f /etc/nginx/sites-enabled/default
 cat << 'EON' > /etc/nginx/sites-available/reverse-proxy.conf
