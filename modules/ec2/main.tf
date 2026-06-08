@@ -8,12 +8,12 @@ terraform {
   }
 }
 resource "aws_instance" "server" {
-  ami                    = var.ami_id
-  instance_type          = var.instance_type
-  subnet_id              = var.subnet_id
-  user_data              = var.user_data_script
+  ami                         = var.ami_id
+  instance_type               = var.instance_type
+  subnet_id                   = var.subnet_id
+  user_data                   = var.user_data_script
   user_data_replace_on_change = true
-  vpc_security_group_ids = [aws_security_group.web_sg.id]
+  vpc_security_group_ids      = [aws_security_group.web_sg.id]
 
   tags = {
     Name = var.instance_name
