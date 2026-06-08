@@ -77,8 +77,10 @@ build_api:
   script: 
     - npm install
     - npm run test:api
-    - npx nx run api:copy-assets
     - npx nx build api --prod
+    - mkdir -p dist/apps/api/assets/locales
+    - cp -r apps/api/src/assets/* dist/apps/api/assets/ || true
+    - cp -r apps/client/src/locales/* dist/apps/api/assets/locales/
     
   artifacts:
     name : api_build
