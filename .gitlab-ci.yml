@@ -57,8 +57,9 @@ build_api:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   script: 
     - npm install
-    - npx nx test api
+    - npx run test:api
     - npx nx build api --prod
+    
   artifacts:
     name : api_build
     paths:
@@ -72,10 +73,11 @@ build_client:
   script:
     - npm install
     - npx nx build client --prod
+    - tar -czvf client-build.tar.gz -C dist/apps/client .
   artifacts: 
     name : client_build
     paths:
-      - dist/apps/client
+      - client-build.tar.gz
 
 deploy_to_ec2:
   stage: deploy
@@ -86,7 +88,7 @@ deploy_to_ec2:
     - build_api
     - build_client
   before_script:
-    - apk add --no-cache openssh-client rsync
+    - apk add --no-cache openssh-client rsync tar
     - eval $(ssh-agent -s)
     - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
@@ -95,6 +97,8 @@ deploy_to_ec2:
     - chmod 644 ~/.ssh/known_hosts
     
   script:
+    - mkdir -p dist/apps/client
+    - tar -xzvf client-build.tar.gz -C dist/apps/client
     - rsync -avz --delete dist/apps/api/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/api
     - rsync -avz --delete dist/apps/client/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/client
     - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && npm install --production && pm2 restart my-api || pm2 start server.js --name my-api" 
