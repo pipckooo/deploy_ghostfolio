@@ -146,15 +146,24 @@ deploy_to_ec2:
     
 
     - ssh ubuntu@$EC2_IP_ADDRESS "cp -r /home/ubuntu/apps/api/node_modules/.prisma/client/* /home/ubuntu/apps/api/node_modules/@prisma/client/"
-    - ssh ubuntu@$EC2_IP_ADDRESS "echo 'ACCESS_TOKEN_SALT=my_super_secret_salt_123' > /home/ubuntu/apps/api/.env"
-    - ssh ubuntu@$EC2_IP_ADDRESS "echo 'JWT_SECRET_KEY=my_super_secret_jwt_key_456' >> /home/ubuntu/apps/api/.env"
-    - ssh ubuntu@$EC2_IP_ADDRESS "echo 'DATABASE_URL=postgresql://ghostfolio:ghostfolio@127.0.0.1:5432/ghostfolio' >> /home/ubuntu/apps/api/.env"
-    - ssh ubuntu@$EC2_IP_ADDRESS "echo 'PORT=3000' >> /home/ubuntu/apps/api/.env"
-   
+    - |
+      ssh ubuntu@$EC2_IP_ADDRESS "cat << 'EOF' > /home/ubuntu/apps/api/ecosystem.config.js
+      module.exports = {
+        apps: [{
+          name: 'my-api',
+          script: 'main.js',
+          env: {
+            ACCESS_TOKEN_SALT: 'my_super_secret_salt_123',
+            JWT_SECRET_KEY: 'my_super_secret_jwt_key_456',
+            DATABASE_URL: 'postgresql://ghostfolio:ghostfolio@127.0.0.1:5432/ghostfolio',
+            PORT: 3000
+          }
+        }]
+      };
+      EOF"
     - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && npx --yes prisma db push"
-
     - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && pm2 delete my-api || true"
-    - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && pm2 start main.js --name my-api --node-args='--env-file=/home/ubuntu/apps/api/.env'"
+    - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && pm2 start ecosystem.config.js"
     
     - ssh ubuntu@$EC2_IP_ADDRESS "sudo systemctl status nginx --no-pager || true" 
     - ssh ubuntu@$EC2_IP_ADDRESS "pm2 logs my-api --lines 20 --nostream"
