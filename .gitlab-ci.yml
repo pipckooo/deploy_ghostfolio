@@ -154,7 +154,7 @@ deploy_to_ec2:
     - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && npx --yes prisma db push"
 
     - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && pm2 delete my-api || true"
-    - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && pm2 start main.js --name my-api"
+    - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && pm2 start main.js --name my-api --node-args='--env-file=/home/ubuntu/apps/api/.env'"
     
     - ssh ubuntu@$EC2_IP_ADDRESS "sudo systemctl status nginx --no-pager || true" 
     - ssh ubuntu@$EC2_IP_ADDRESS "pm2 logs my-api --lines 20 --nostream"
