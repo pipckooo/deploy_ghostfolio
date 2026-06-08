@@ -35,4 +35,4 @@ systemctl restart nginx
 
 certbot --nginx -d task-3-2-4.fox-tier-task.pp.ua --non-interactive --agree-tos -m ${certbot_email} --redirect || true
 
-# Force Rebuild
+# Force Rebuild 3
