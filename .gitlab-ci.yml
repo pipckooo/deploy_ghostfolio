@@ -130,7 +130,7 @@ deploy_to_ec2:
     - rsync -avz --delete dist/apps/api/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/api
     - rsync -avz --delete dist/apps/client/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/client
     - rsync -avz prisma/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/api/prisma
-    - rsync -avz .env ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/api/.env
+
     
     - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && npm install --production && npx --yes prisma generate"
     
