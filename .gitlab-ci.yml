@@ -119,7 +119,7 @@ deploy_to_ec2:
   script:
     - mkdir -p dist/apps/client
     - tar -xzvf client-build.tar.gz -C dist/apps/client
-    - ssh ubuntu@$EC2_IP_ADDRESS "cloud-init status --wait"
+    - ssh ubuntu@$EC2_IP_ADDRESS "cloud-init status --wait" || (ssh ubuntu@$EC2_IP_ADDRESS "cat /var/log/cloud-init-output.log" && exit 1)
     - ssh ubuntu@$EC2_IP_ADDRESS "mkdir -p /home/ubuntu/apps/api /home/ubuntu/apps/client"
     - rsync -avz --delete dist/apps/api/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/api
     - rsync -avz --delete dist/apps/client/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/client
