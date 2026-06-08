@@ -2,6 +2,7 @@
 apt-get update -y
 apt-get install -y nginx certbot python3-certbot-nginx
 
+sleep 45
 rm /etc/nginx/sites-enabled/default
 cat << 'EON' > /etc/nginx/sites-available/reverse-proxy.conf
 server {
