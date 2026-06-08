@@ -1,3 +1,7 @@
+terraform {
+  backend "http" {
+  }
+}
 resource "aws_key_pair" "deploy" {
   key_name   = "gitlab-deploy-key"
   public_key = file("${path.root}/gitlab-deploy-key.pub")
@@ -38,7 +42,7 @@ module "ec2" {
     certbot_email = var.certbot_email
   })
   vpc_id   = module.vpc.vpc_id
-  my_ip    = var.my_ip
+
   key_name = aws_key_pair.deploy.key_name
 }
 
