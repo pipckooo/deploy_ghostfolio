@@ -1,11 +1,16 @@
 #!/bin/bash
 
-sleep 45
+set -e
+
+until ping -c 1 deb.nodesource.com; do
+    echo "Waiting for internet..."
+    sleep 5
+done
+
 apt-get update -y
-apt-get install -y nginx certbot python3-certbot-nginx
+apt-get install -y nginx certbot python3-certbot-nginx curl
 
-
-rm /etc/nginx/sites-enabled/default
+rm -f /etc/nginx/sites-enabled/default
 cat << 'EON' > /etc/nginx/sites-available/reverse-proxy.conf
 server {
     listen 80;
@@ -21,15 +26,11 @@ server {
 }
 EON
 
-ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/ || true
 systemctl restart nginx
 
-certbot --nginx -d task-3-2-4.fox-tier-task.pp.ua --non-interactive --agree-tos -m ${certbot_email} --redirect
+certbot --nginx -d task-3-2-4.fox-tier-task.pp.ua --non-interactive --agree-tos -m ${certbot_email} --redirect || true
 
 curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 apt-get install -y nodejs
 npm install -g pm2
-
-
-
-
