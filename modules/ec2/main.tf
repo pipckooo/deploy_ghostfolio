@@ -17,8 +17,9 @@ resource "aws_instance" "server" {
   tags = {
     Name = var.instance_name
   }
+  key_name = var.key_name
 }
-
+ 
 resource "aws_eip" "this" {
   count  = var.allocate_eip ? 1 : 0
   domain = "vpc"

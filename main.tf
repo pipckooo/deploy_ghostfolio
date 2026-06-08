@@ -21,6 +21,7 @@ module "ec2" {
   })
   vpc_id = module.vpc.vpc_id
   my_ip  = var.my_ip
+  key_name = aws_key_pair.deploy.key_name
 }
 
 module "route53" {
