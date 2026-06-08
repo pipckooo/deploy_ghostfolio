@@ -72,7 +72,7 @@ build_client:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   script:
     - npm install
-    - npx nx build client --prod
+    - npx nx build client --prod --localize=false
     - tar -czvf client-build.tar.gz -C dist/apps/client .
   artifacts: 
     name : client_build
