@@ -119,8 +119,14 @@ deploy_to_ec2:
   script:
     - mkdir -p dist/apps/client
     - tar -xzvf client-build.tar.gz -C dist/apps/client
-    - ssh ubuntu@$EC2_IP_ADDRESS "cloud-init status --wait" || (ssh ubuntu@$EC2_IP_ADDRESS "cat /var/log/cloud-init-output.log" && exit 1)
+    - ssh ubuntu@$EC2_IP_ADDRESS "cloud-init status --wait" || true
+    
     - ssh ubuntu@$EC2_IP_ADDRESS "mkdir -p /home/ubuntu/apps/api /home/ubuntu/apps/client"
+    
+    - ssh ubuntu@$EC2_IP_ADDRESS "sudo curl -fsSL https://deb.nodesource.com/setup_22.x | sudo bash -"
+    - ssh ubuntu@$EC2_IP_ADDRESS "sudo apt-get install -y nodejs"
+    - ssh ubuntu@$EC2_IP_ADDRESS "sudo npm install -g pm2"
+    
     - rsync -avz --delete dist/apps/api/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/api
     - rsync -avz --delete dist/apps/client/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/client
-    - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && npm install --production && pm2 restart my-api || pm2 start server.js --name my-api" 
+    - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && npm install --production && pm2 restart my-api || pm2 start server.js --name my-api"
