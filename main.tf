@@ -2,6 +2,21 @@ resource "aws_key_pair" "deploy" {
   key_name   = "gitlab-deploy-key"
   public_key = file("${path.root}/gitlab-deploy-key.pub")
 }
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"] # Canonical (The creators of Ubuntu)
+}
 
 module "vpc" {
   source             = "./modules/vpc"
@@ -13,7 +28,7 @@ module "vpc" {
 
 module "ec2" {
   source        = "./modules/ec2"
-  ami_id        = "ami-0c55b159cbfafe1f0"
+  ami_id        = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
   subnet_id     = module.vpc.public_subnet_id
   allocate_eip  = true
