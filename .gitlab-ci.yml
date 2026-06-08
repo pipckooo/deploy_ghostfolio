@@ -57,7 +57,7 @@ build_api:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   script: 
     - npm install
-    - npx run test:api
+    - npm run test:api
     - npx nx build api --prod
     
   artifacts:
