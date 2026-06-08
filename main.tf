@@ -19,8 +19,8 @@ module "ec2" {
   user_data_script = templatefile("${path.root}/setup.sh", {
     certbot_email = var.certbot_email
   })
-  vpc_id = module.vpc.vpc_id
-  my_ip  = var.my_ip
+  vpc_id   = module.vpc.vpc_id
+  my_ip    = var.my_ip
   key_name = aws_key_pair.deploy.key_name
 }
 

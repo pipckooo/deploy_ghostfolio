@@ -19,7 +19,7 @@ resource "aws_instance" "server" {
   }
   key_name = var.key_name
 }
- 
+
 resource "aws_eip" "this" {
   count  = var.allocate_eip ? 1 : 0
   domain = "vpc"
