@@ -139,6 +139,8 @@ deploy_to_ec2:
     - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && npm install --production && npx --yes prisma@7.8.0 generate"
     - ssh ubuntu@$EC2_IP_ADDRESS "ls -la /home/ubuntu/apps/api/node_modules/.prisma/client || echo 'PRISMA SILENTLY FAILED'"
     
+
+    - ssh ubuntu@$EC2_IP_ADDRESS "cp -r /home/ubuntu/apps/api/node_modules/.prisma/client/* /home/ubuntu/apps/api/node_modules/@prisma/client/"
     - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && pm2 delete my-api || true"
     - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && pm2 start main.js --name my-api"
     
