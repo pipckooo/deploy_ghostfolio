@@ -6,6 +6,7 @@ resource "aws_key_pair" "deploy" {
   key_name   = "gitlab-deploy-key"
   public_key = file("${path.root}/gitlab-deploy-key.pub")
 }
+
 data "aws_ami" "ubuntu" {
   most_recent = true
 
