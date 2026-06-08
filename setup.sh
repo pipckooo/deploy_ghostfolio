@@ -21,9 +21,9 @@ EON
 ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/
 systemctl restart nginx
 
-certbot --nginx -d task-3-2-4.fox-tier-task.pp.ua --non-interactive --agree-tos -m olegkonovaluk15@gmail.com --redirect
+certbot --nginx -d task-3-2-4.fox-tier-task.pp.ua --non-interactive --agree-tos -m ${certbot_email} --redirect
 
-curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 apt-get install -y nodejs
 npm install -g pm2
 
