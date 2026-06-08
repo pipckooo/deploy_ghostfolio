@@ -1,4 +1,7 @@
-
+resource "aws_key_pair" "deploy" {
+  key_name   = "gitlab-deploy-key"
+  public_key = file("${path.root}/gitlab-deploy-key.pub")
+}
 
 module "vpc" {
   source             = "./modules/vpc"
