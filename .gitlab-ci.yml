@@ -55,14 +55,14 @@ build_api:
   image: node:18-alpine
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-  script:
-    - cd apps/api 
+  script: 
     - npm install
-    - npm test
+    - npx nx test api
+    - npx nx build api --prod
   artifacts:
     name : api_build
     paths:
-      - apps/api
+      - dist/apps/api
 
 build_client:
   stage: build
@@ -70,13 +70,12 @@ build_client:
   rules: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   script:
-    - cd apps/client 
     - npm install
-    - npm run build 
+    - npx nx build client --prod
   artifacts: 
     name : client_build
     paths:
-      - apps/client/build
+      - dist/apps/client
 
 deploy_to_ec2:
   stage: deploy
@@ -96,6 +95,6 @@ deploy_to_ec2:
     - chmod 644 ~/.ssh/known_hosts
     
   script:
-    - rsync -avz --delete apps/api ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/
-    - rsync -avz --delete apps/client/build ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/client/
+    - rsync -avz --delete dist/apps/api/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/api
+    - rsync -avz --delete dist/apps/client/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/client
     - ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && npm install --production && pm2 restart my-api || pm2 start server.js --name my-api" 
