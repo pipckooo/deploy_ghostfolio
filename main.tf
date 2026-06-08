@@ -33,11 +33,12 @@ module "vpc" {
 
 module "ec2" {
   source        = "./modules/ec2"
+  depends_on    = [module.vpc]
   ami_id        = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
   subnet_id     = module.vpc.public_subnet_id
   allocate_eip  = true
-
+  
   instance_name = "dev-web-server"
   user_data_script = templatefile("${path.root}/setup.sh", {
     certbot_email = var.certbot_email
