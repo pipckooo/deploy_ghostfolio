@@ -15,12 +15,12 @@ module "ec2" {
   subnet_id     = module.vpc.public_subnet_id
   allocate_eip  = true
 
-  instance_name    = "dev-web-server"
-  user_data_script = templatefile("${path.root}/setup.sh", { 
-    certbot_email = var.certbot_email 
+  instance_name = "dev-web-server"
+  user_data_script = templatefile("${path.root}/setup.sh", {
+    certbot_email = var.certbot_email
   })
-  vpc_id           = module.vpc.vpc_id
-  my_ip            = var.my_ip
+  vpc_id = module.vpc.vpc_id
+  my_ip  = var.my_ip
 }
 
 module "route53" {
