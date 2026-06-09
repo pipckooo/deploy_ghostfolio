@@ -20,7 +20,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.15.4"
+          terraform_version: '1.15.4'
 
       - name: Terraform Init
         run: terraform init
@@ -127,34 +127,34 @@ jobs:
         run: |
           mkdir -p dist/apps/client
           tar -xzvf client-build.tar.gz -C dist/apps/client
-          
+
           ssh ubuntu@$EC2_IP_ADDRESS "cloud-init status --wait" || (ssh ubuntu@$EC2_IP_ADDRESS "cat /var/log/cloud-init-output.log" && exit 1)
           ssh ubuntu@$EC2_IP_ADDRESS "mkdir -p /home/ubuntu/apps/api /home/ubuntu/apps/client"
-          
+
           ssh ubuntu@$EC2_IP_ADDRESS "sudo apt-get update -y && sudo apt-get install -y nginx redis-server"
           ssh ubuntu@$EC2_IP_ADDRESS "sudo curl -fsSL https://deb.nodesource.com/setup_22.x | sudo bash -"
           ssh ubuntu@$EC2_IP_ADDRESS "sudo apt-get install -y nodejs"
           ssh ubuntu@$EC2_IP_ADDRESS "sudo npm install -g pm2"
-          
+
           rsync -avz --delete dist/apps/api/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/api
           rsync -avz --delete dist/apps/client/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/client
           rsync -avz prisma/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/api/prisma
           rsync -avz .config/ ubuntu@$EC2_IP_ADDRESS:/home/ubuntu/apps/api/.config
-          
+
           ssh ubuntu@$EC2_IP_ADDRESS "sudo fallocate -l 1G /swapfile || true"
           ssh ubuntu@$EC2_IP_ADDRESS "sudo chmod 600 /swapfile || true"
           ssh ubuntu@$EC2_IP_ADDRESS "sudo mkswap /swapfile || true"
           ssh ubuntu@$EC2_IP_ADDRESS "sudo swapon /swapfile || true"
-          
+
           ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && npm install --production && npx --yes prisma@7.8.0 generate"
           ssh ubuntu@$EC2_IP_ADDRESS "ls -la /home/ubuntu/apps/api/node_modules/.prisma/client || echo 'PRISMA SILENTLY FAILED'"
-          
+
           ssh ubuntu@$EC2_IP_ADDRESS "cp -r /home/ubuntu/apps/api/node_modules/.prisma/client/* /home/ubuntu/apps/api/node_modules/@prisma/client/"
           ssh ubuntu@$EC2_IP_ADDRESS "echo 'ACCESS_TOKEN_SALT=my_super_secret_salt_123' > /home/ubuntu/apps/api/.env"
           ssh ubuntu@$EC2_IP_ADDRESS "echo 'JWT_SECRET_KEY=my_super_secret_jwt_key_456' >> /home/ubuntu/apps/api/.env"
           ssh ubuntu@$EC2_IP_ADDRESS "echo 'DATABASE_URL=postgresql://ghostfolio:ghostfolio@127.0.0.1:5432/ghostfolio' >> /home/ubuntu/apps/api/.env"
           ssh ubuntu@$EC2_IP_ADDRESS "echo 'PORT=3000' >> /home/ubuntu/apps/api/.env"
-          
+
           ssh ubuntu@$EC2_IP_ADDRESS "cat << 'EOF' > /home/ubuntu/apps/api/ecosystem.config.js
           module.exports = {
             apps: [{
@@ -169,10 +169,10 @@ jobs:
             }]
           };
           EOF"
-          
+
           ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && npx --yes prisma db push"
           ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && pm2 delete my-api || true"
           ssh ubuntu@$EC2_IP_ADDRESS "cd /home/ubuntu/apps/api && pm2 start ecosystem.config.js"
-          
+
           ssh ubuntu@$EC2_IP_ADDRESS "sudo systemctl status nginx --no-pager || true" 
           ssh ubuntu@$EC2_IP_ADDRESS "pm2 logs my-api --lines 20 --nostream"
