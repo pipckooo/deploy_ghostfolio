@@ -1,10 +1,10 @@
 terraform {
   backend "s3" {
-    bucket = "terraform-state-task-3-2-4"
-    key = "github-terraform.tfstate"
-    region = "us-east-1"
+    bucket       = "terraform-state-task-3-2-4"
+    key          = "github-terraform.tfstate"
+    region       = "us-east-1"
     use_lockfile = true
-    encrypt = true
+    encrypt      = true
   }
 }
 resource "aws_key_pair" "deploy" {
@@ -25,7 +25,7 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] 
+  owners = ["099720109477"]
 }
 
 module "vpc" {
