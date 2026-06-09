@@ -1,10 +1,15 @@
 terraform {
-  backend "http" {
+  backend "s3" {
+    bucket = "terraform-state-task-3-2-4"
+    key = "github-terraform.tfstate"
+    region = "us-east-1"
+    use_lockfile = true
+    encrypt = true
   }
 }
 resource "aws_key_pair" "deploy" {
-  key_name   = "gitlab-deploy-key"
-  public_key = file("${path.root}/gitlab-deploy-key.pub")
+  key_name   = "github-deploy-key"
+  public_key = file("${path.root}/github-deploy-key.pub")
 }
 
 data "aws_ami" "ubuntu" {
@@ -20,7 +25,7 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical (The creators of Ubuntu)
+  owners = ["099720109477"] 
 }
 
 module "vpc" {
