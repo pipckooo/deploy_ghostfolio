@@ -1,0 +1,105 @@
+name: PR Validation and Build
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate_and_lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.15.4'
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v3
+        with:
+          tflint_version: 'v0.61.0'
+
+      - name: Run TFLint
+        run: |
+          tflint --init
+          tflint --recursive
+
+  terraform_plan:
+    runs-on: ubuntu-latest
+    needs: validate_and_lint
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.15.4'
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan
+
+  build_api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Test API
+        run: npm run test:api
+
+      - name: Build API
+        run: npx nx build api --prod
+
+      - name: Package Assets
+        run: |
+          mkdir -p dist/apps/api/assets/locales
+          cp -r apps/api/src/assets/* dist/apps/api/assets/ || true
+          cp -r apps/client/src/locales/* dist/apps/api/assets/locales/
+
+  build_client:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Client
+        run: npx nx build client --prod --localize=false
+
+      - name: Package Client
+        run: |
+          for lang in ca de en es fr it ko nl pl pt tr uk zh; do mkdir -p dist/apps/client/$lang && cp dist/apps/client/index.html dist/apps/client/$lang/index.html; done
